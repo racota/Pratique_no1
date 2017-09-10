@@ -5,29 +5,27 @@ using UnityEngine;
 public class PlatformPlayerController : MonoBehaviour {
     // Highly inspired by this script : https://unity3d.com/fr/learn/tutorials/topics/2d-game-creation/creating-basic-platformer-game
     private bool facingRight = true;
-    private bool jump = false;
     [SerializeField]
-    private float moveForce = 365f;
+    private float moveForce = 20f;
     [SerializeField]
-    private float maxSpeed = 5f;
-    [SerializeField]
-    private float jumpForce = 1000f;
+    private float maxSpeed = 3f;
     [SerializeField]
     private Transform groundCheck;
 
-
-    private bool grounded = false;
     private Animator anim;
     private Rigidbody2D rb2d;
 
     // Abilities (dynamicaly changeable action control by inputs)
-    Dictionary<string, Ability> currentAbilities;
-    Dictionary<string, Ability> allAbilities;
+    Dictionary<string, Ability> currentAbilities = new Dictionary<string, Ability>();
+    Dictionary<string, Ability> allAbilities = new Dictionary<string, Ability>();
 
 
     // Use this for initialization
     void Awake()
     {
+        Jump jumpAbility = new Jump("jump");
+        allAbilities.Add("jump", jumpAbility);
+        currentAbilities.Add("jump", jumpAbility);
         //anim = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
     }
@@ -35,14 +33,10 @@ public class PlatformPlayerController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-
-        if (Input.GetButtonDown("Jump") && grounded)
-        {
-            jump = true;
-        }
         // Verify player's inputs by going throught all abilities.
-
+        foreach (var ability in currentAbilities) {
+            ability.Value.onUpdate(rb2d,transform,groundCheck);
+        }
     }
 
     void FixedUpdate()
@@ -62,11 +56,9 @@ public class PlatformPlayerController : MonoBehaviour {
         else if (h < 0 && facingRight)
             Flip();
 
-        if (jump)
+        foreach (var ability in currentAbilities)
         {
-            //anim.SetTrigger("Jump");
-            rb2d.AddForce(new Vector2(0f, jumpForce));
-            jump = false;
+            ability.Value.onFixedUpdate(ref rb2d, transform, groundCheck);
         }
     }
 

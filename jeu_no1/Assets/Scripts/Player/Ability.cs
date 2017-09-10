@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-abstract public class Ability : MonoBehaviour {
+abstract public class Ability {
 
     private string id;
 
@@ -10,8 +10,8 @@ abstract public class Ability : MonoBehaviour {
         id = newId;
     }
 
-    public abstract void onUpdate();
-    public abstract void onFixedUpdate();
+    public abstract void onUpdate(Rigidbody2D rb2d, Transform player, Transform groundCheck);
+    public abstract void onFixedUpdate(ref Rigidbody2D rb2d, Transform player, Transform groundCheck);
 
     public string Id {
         get {
