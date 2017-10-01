@@ -8,7 +8,7 @@ public class Jump : Ability {
 
     private bool jump = false;
 
-    private float jumpForce = 100f;
+    private float jumpForce = 200f;
 
     public Jump(string id): base(id) {
         
