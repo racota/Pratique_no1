@@ -19,6 +19,9 @@ public class PlatformPlayerController : MonoBehaviour {
     Dictionary<string, Ability> currentAbilities = new Dictionary<string, Ability>();
     Dictionary<string, Ability> allAbilities = new Dictionary<string, Ability>();
 
+    // Inventory
+    [SerializeField]
+    private PlayerInventory inventory;
 
     // Use this for initialization
     void Awake()
@@ -62,12 +65,20 @@ public class PlatformPlayerController : MonoBehaviour {
         }
     }
 
-
     void Flip()
     {
         facingRight = !facingRight;
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Collectable"))
+        {
+            inventory.addCoins(1);
+            Destroy(collision.gameObject);
+        }
     }
 }
